@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Open App or Redirect to App Store</title>
+    <script>
+        function getLastPathSegment(url) {
+            var pathArray = url.split('/');
+            return pathArray[pathArray.length - 1] || pathArray[pathArray.length - 2];
+        }
+
+        function openAppOrRedirect() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            // Определяем платформу
+            var isAndroid = /android/i.test(userAgent);
+            var isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+            // Получаем последний сегмент пути из URL
+            var appId = getLastPathSegment(window.location.pathname);
+            if (!appId || isNaN(appId)) {
+                console.log("No valid ID found in the URL. Aborting...");
+                return; // Если id не найден, прерываем выполнение
+            }
+
+            // Define your app's URL scheme
+            var deepLink = 'VAYTODAY://POST/' + appId;
+            var appStoreURL = 'https://apps.apple.com/us/app/vaytoday/id1547499001';
+            var playStoreURL = 'https://play.google.com/store/apps/details?id=com.flametech.vaytoday';
+
+            console.log("Trying to open app with deep link: " + deepLink);
+
+            // Try opening the deep link
+            window.location = deepLink;
+
+            // If the app is not installed, redirect to the appropriate store after a short delay
+            setTimeout(function() {
+                if (isIOS) {
+                    console.log("App is not installed, redirecting to App Store: " + appStoreURL);
+                    window.location = appStoreURL;
+                } else if (isAndroid) {
+                    console.log("App is not installed, redirecting to Play Store: " + playStoreURL);
+                    window.location = playStoreURL;
+                } else {
+                    console.log("Unsupported platform.");
+                }
+            }, 2000); // Adjust the timeout if necessary
+        }
+
+        window.onload = function() {
+            openAppOrRedirect();
+        };
+    </script>
+</head>
+<body>
+    <p>Checking for the app...</p>
+</body>
+</html>
