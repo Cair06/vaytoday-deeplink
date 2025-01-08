@@ -5,10 +5,14 @@
     <title>Open App or Redirect to App Store</title>
     <script>
         function getDeepLinkFromPath(path) {
-            // Убираем начальный и конечный слэш
+            // Убираем начальные и конечные слэши
             var cleanedPath = path.replace(/^\/+|\/+$/g, '');
             
-            // Проверяем, содержит ли путь сегменты для товара
+            // Проверяем, начинается ли путь на 'company/'.
+            // Если да — формируем deep link вида:
+            //   VAYTODAY://company/1360
+            //   или
+            //   VAYTODAY://company/1360/product/3
             if (cleanedPath.startsWith('company/')) {
                 return 'VAYTODAY://' + cleanedPath;
             }
@@ -18,30 +22,31 @@
         }
 
         function openAppOrRedirect() {
-            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            var userAgent = navigator.userAgent  navigator.vendor  window.opera;
 
             // Определяем платформу
             var isAndroid = /android/i.test(userAgent);
             var isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-            // Получаем путь из URL
+            // Получаем путь из URL ("/company/1360", "/company/1360/product/3" и т. д.)
             var path = window.location.pathname;
             var deepLink = getDeepLinkFromPath(path);
 
             if (!deepLink) {
                 console.log("No valid deep link found. Aborting...");
-                return; // Если ссылка не найдена, прерываем выполнение
+                return; // Если deep link не сформирован, дальше не идём
             }
 
+            // Ссылки на магазины приложений
             var appStoreURL = 'https://apps.apple.com/us/app/vaytoday/id1547499001';
             var playStoreURL = 'https://play.google.com/store/apps/details?id=com.flametech.vaytoday';
 
             console.log("Trying to open app with deep link: " + deepLink);
 
-            // Try opening the deep link
+            // Пытаемся открыть приложение
             window.location = deepLink;
 
-            // If the app is not installed, redirect to the appropriate store after a short delay
+            // Если приложение не установлено, через короткую задержку перенаправляем в соответствующий стор
             setTimeout(function() {
                 if (isIOS) {
                     console.log("App is not installed, redirecting to App Store: " + appStoreURL);
@@ -52,7 +57,7 @@
                 } else {
                     console.log("Unsupported platform.");
                 }
-            }, 2000); // Adjust the timeout if necessary
+            }, 2000);
         }
 
         window.onload = function() {
