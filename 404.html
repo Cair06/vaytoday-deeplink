@@ -22,13 +22,13 @@
             var appPath = getLastPathSegment(path);
 
             // Проверяем, корректен ли путь
-            if (!appPath || !appPath.startsWith('company/')) {
+            if (!appPath || (!appPath.startsWith('company/') && !appPath.startsWith('product/'))) {
                 console.log("Invalid path format. Aborting...");
                 return;
             }
 
             // Формируем deep link
-            var deepLink = 'VAYTODAY://' + appPath;
+            var deepLink = 'VAYTODAY://POST/' + appPath;
 
             // Ссылки на магазины приложений
             var appStoreURL = 'https://apps.apple.com/us/app/vaytoday/id1547499001';
