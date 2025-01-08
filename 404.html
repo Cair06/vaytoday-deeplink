@@ -5,10 +5,10 @@
     <title>Open App or Redirect to App Store</title>
     <script>
         function getDeepLinkPath(url) {
-            // Убираем начальные и конечные слэши из пути
+            // Убираем начальные и конечные слэши
             var cleanedPath = url.replace(/^\/+|\/+$/g, '');
 
-            // Убираем префикс GitHub Pages (например, "vaytoday-deeplink")
+            // Проверяем, есть ли префикс GitHub Pages "vaytoday-deeplink"
             if (cleanedPath.startsWith('vaytoday-deeplink/')) {
                 cleanedPath = cleanedPath.replace('vaytoday-deeplink/', '');
             }
