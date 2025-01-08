@@ -4,38 +4,31 @@
     <meta charset="UTF-8">
     <title>Open App or Redirect to App Store</title>
     <script>
-        function getDeepLinkFromPath(path) {
+        function getLastPathSegment(url) {
             // Убираем начальные и конечные слэши
-            var cleanedPath = path.replace(/^\/+|\/+$/g, '');
-            
-            // Проверяем, начинается ли путь на 'company/'.
-            // Если да — формируем deep link вида:
-            //   VAYTODAY://company/1360
-            //   или
-            //   VAYTODAY://company/1360/product/3
-            if (cleanedPath.startsWith('company/')) {
-                return 'VAYTODAY://' + cleanedPath;
-            }
-
-            console.log("Invalid path format. Aborting...");
-            return null;
+            var pathArray = url.replace(/^\/+|\/+$/g, '').split('/');
+            return pathArray.join('/'); // Возвращаем весь путь
         }
 
         function openAppOrRedirect() {
-            var userAgent = navigator.userAgent  navigator.vendor  window.opera;
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
             // Определяем платформу
             var isAndroid = /android/i.test(userAgent);
             var isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-            // Получаем путь из URL ("/company/1360", "/company/1360/product/3" и т. д.)
+            // Получаем путь из URL
             var path = window.location.pathname;
-            var deepLink = getDeepLinkFromPath(path);
+            var appPath = getLastPathSegment(path);
 
-            if (!deepLink) {
-                console.log("No valid deep link found. Aborting...");
-                return; // Если deep link не сформирован, дальше не идём
+            // Проверяем, корректен ли путь
+            if (!appPath || !appPath.startsWith('company/')) {
+                console.log("Invalid path format. Aborting...");
+                return;
             }
+
+            // Формируем deep link
+            var deepLink = 'VAYTODAY://' + appPath;
 
             // Ссылки на магазины приложений
             var appStoreURL = 'https://apps.apple.com/us/app/vaytoday/id1547499001';
@@ -47,7 +40,7 @@
             window.location = deepLink;
 
             // Если приложение не установлено, через короткую задержку перенаправляем в соответствующий стор
-            setTimeout(function() {
+            setTimeout(function () {
                 if (isIOS) {
                     console.log("App is not installed, redirecting to App Store: " + appStoreURL);
                     window.location = appStoreURL;
@@ -57,10 +50,10 @@
                 } else {
                     console.log("Unsupported platform.");
                 }
-            }, 2000);
+            }, 2000); // Настраиваемая задержка
         }
 
-        window.onload = function() {
+        window.onload = function () {
             openAppOrRedirect();
         };
     </script>
