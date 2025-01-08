@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <title>Open App or Redirect to App Store</title>
     <script>
-        function getLastPathSegment(url) {
-            var pathArray = url.split('/');
-            return pathArray[pathArray.length - 1] || pathArray[pathArray.length - 2];
+        function getDeepLinkFromPath(path) {
+            // Убираем начальный и конечный слэш
+            var cleanedPath = path.replace(/^\/+|\/+$/g, '');
+            
+            // Проверяем, содержит ли путь сегменты для товара
+            if (cleanedPath.startsWith('company/')) {
+                return 'VAYTODAY://' + cleanedPath;
+            }
+
+            console.log("Invalid path format. Aborting...");
+            return null;
         }
 
         function openAppOrRedirect() {
@@ -16,15 +24,15 @@
             var isAndroid = /android/i.test(userAgent);
             var isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-            // Получаем последний сегмент пути из URL
-            var appId = getLastPathSegment(window.location.pathname);
-            if (!appId || isNaN(appId)) {
-                console.log("No valid ID found in the URL. Aborting...");
-                return; // Если id не найден, прерываем выполнение
+            // Получаем путь из URL
+            var path = window.location.pathname;
+            var deepLink = getDeepLinkFromPath(path);
+
+            if (!deepLink) {
+                console.log("No valid deep link found. Aborting...");
+                return; // Если ссылка не найдена, прерываем выполнение
             }
 
-            // Define your app's URL scheme
-            var deepLink = 'VAYTODAY://POST/' + appId;
             var appStoreURL = 'https://apps.apple.com/us/app/vaytoday/id1547499001';
             var playStoreURL = 'https://play.google.com/store/apps/details?id=com.flametech.vaytoday';
 
