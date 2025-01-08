@@ -4,10 +4,23 @@
     <meta charset="UTF-8">
     <title>Open App or Redirect to App Store</title>
     <script>
-        function getLastPathSegment(url) {
-            // Убираем начальные и конечные слэши
-            var pathArray = url.replace(/^\/+|\/+$/g, '').split('/');
-            return pathArray.join('/'); // Возвращаем весь путь
+        function getDeepLinkPath(url) {
+            // Убираем начальные и конечные слэши из пути
+            var cleanedPath = url.replace(/^\/+|\/+$/g, '');
+
+            // Убираем префикс GitHub Pages (например, "vaytoday-deeplink")
+            if (cleanedPath.startsWith('vaytoday-deeplink/')) {
+                cleanedPath = cleanedPath.replace('vaytoday-deeplink/', '');
+            }
+
+            // Проверяем, начинается ли путь с "company/"
+            if (cleanedPath.startsWith('company/')) {
+                return cleanedPath; // Возвращаем путь
+            }
+
+            // Если путь некорректный
+            console.log("Invalid path format. Aborting...");
+            return null;
         }
 
         function openAppOrRedirect() {
@@ -19,12 +32,10 @@
 
             // Получаем путь из URL
             var path = window.location.pathname;
-            var appPath = getLastPathSegment(path);
+            var appPath = getDeepLinkPath(path);
 
-            // Проверяем, корректен ли путь
-            if (!appPath || (!appPath.startsWith('company/') && !appPath.startsWith('product/'))) {
-                console.log("Invalid path format. Aborting...");
-                return;
+            if (!appPath) {
+                return; // Если путь некорректный, выходим
             }
 
             // Формируем deep link
